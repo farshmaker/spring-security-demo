@@ -1,5 +1,6 @@
 package com.farshmaker.security_demo.student;
 
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/api/v1/students")
@@ -30,19 +33,5 @@ public class StudentController {
         .filter(student -> studentId.equals(student.getId()))
         .findFirst()
         .orElseThrow(() -> new IllegalStateException("Student " + studentId + "does not exists"));
-  }
-
-  @GetMapping("/test")
-  public String getStudent() {
-    final Map<Object, String> treeSet = new HashMap<>();
-    final Object o = new Object();
-    final Object o2 = new Object();
-
-    treeSet.put(o, "Averchenko");
-    treeSet.put(o2, "Averchenko");
-//    treeSet.put("Temp", "Averchenko");
-//    treeSet.put("Yegor", "aver");
-//    treeSet.put("qwerty", "ytrewq");
-    return treeSet.toString();
   }
 }
