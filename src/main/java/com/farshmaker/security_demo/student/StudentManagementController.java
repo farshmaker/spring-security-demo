@@ -1,8 +1,8 @@
 package com.farshmaker.security_demo.student;
 
-import org.apache.juli.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,21 +28,25 @@ public class StudentManagementController {
   );
 
   @GetMapping
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ADMINTRAINEE')")
   public List<Student> getAllStudents() {
     return STUDENTS;
   }
 
   @PostMapping
+  @PreAuthorize("hasAuthority('student:write')")
   public void registerNewStudent(@RequestBody final Student student) {
     log.info(student.toString());
   }
 
   @DeleteMapping("{studentId}")
+  @PreAuthorize("hasAuthority('student:write')")
   public void deleteStudent(@PathVariable final Integer studentId) {
     log.info(studentId.toString());
   }
 
   @PutMapping("{studentId}")
+  @PreAuthorize("hasAuthority('student:write')")
   public void updateStudent(@PathVariable final Integer studentId,
                             @RequestBody final Student student) {
     log.info(String.format("%d, %s", studentId, student));

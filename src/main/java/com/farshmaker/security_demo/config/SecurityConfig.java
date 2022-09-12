@@ -3,6 +3,7 @@ package com.farshmaker.security_demo.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -12,12 +13,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
-import static com.farshmaker.security_demo.config.UserPermission.*;
-import static com.farshmaker.security_demo.config.UserRole.*;
-import static org.springframework.http.HttpMethod.*;
+import static com.farshmaker.security_demo.config.UserRole.ADMIN;
+import static com.farshmaker.security_demo.config.UserRole.ADMINTRAINEE;
+import static com.farshmaker.security_demo.config.UserRole.STUDENT;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
   private final PasswordEncoder passwordEncoder;
@@ -30,17 +32,17 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
+//        .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+//        .and()
         .csrf().disable()
-        .httpBasic().and()
         .authorizeRequests()
         .antMatchers("/").permitAll()
         .antMatchers("/api/**").hasRole(STUDENT.name())
-        .antMatchers(DELETE,"/management/api/**").hasAuthority(COURSE_WRITE.getPermission())
-        .antMatchers(POST,"/management/api/**").hasAuthority(COURSE_WRITE.getPermission())
-        .antMatchers(PUT,"/management/api/**").hasAuthority(COURSE_WRITE.getPermission())
-        .antMatchers(GET,"/management/api/**").hasAnyRole(ADMIN.name(), ADMINTRAINEE.name())
         .anyRequest()
-        .authenticated();
+        .authenticated()
+        .and()
+        .formLogin().loginPage("/login").permitAll()
+        .defaultSuccessUrl("/courses", false);
 
     return http.build();
   }
@@ -55,7 +57,7 @@ public class SecurityConfig {
         .build();
 
     final UserDetails mikeUser = User.builder()
-        .username("mike")
+        .username("linda")
         .password(passwordEncoder.encode("password123"))
 //        .roles(ADMIN.name())
         .authorities(ADMIN.getGrantedAuthorities())
@@ -63,7 +65,7 @@ public class SecurityConfig {
 
     final UserDetails tomUser = User.builder()
         .username("tom")
-        .password(passwordEncoder.encode("password321"))
+        .password(passwordEncoder.encode("password123"))
 //        .roles(ADMINTRAINEE.name())
         .authorities(ADMINTRAINEE.getGrantedAuthorities())
         .build();
