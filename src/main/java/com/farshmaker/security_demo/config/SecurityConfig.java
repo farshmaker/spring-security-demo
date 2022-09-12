@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
+import java.util.concurrent.TimeUnit;
+
 import static com.farshmaker.security_demo.config.UserRole.ADMIN;
 import static com.farshmaker.security_demo.config.UserRole.ADMINTRAINEE;
 import static com.farshmaker.security_demo.config.UserRole.STUDENT;
@@ -42,7 +44,13 @@ public class SecurityConfig {
         .authenticated()
         .and()
         .formLogin().loginPage("/login").permitAll()
-        .defaultSuccessUrl("/courses", false);
+        .defaultSuccessUrl("/courses", false)
+        .and()
+        .rememberMe()
+        .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21))
+        .key("securedkey");
+
+    ;
 
     return http.build();
   }
